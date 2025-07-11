@@ -16,9 +16,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.*;
-import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.mask.MaskIntersection;
-import com.sk89q.worldedit.function.mask.MaskUnion;
+import com.sk89q.worldedit.function.mask.*;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
@@ -27,14 +25,17 @@ import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import me.ryandw11.ods.ObjectDataStructure;
 import me.ryandw11.ods.tags.IntTag;
 import me.ryandw11.ods.tags.ListTag;
 import me.ryandw11.ods.tags.ObjectTag;
 import org.bukkit.*;
 import org.bukkit.block.*;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -125,6 +126,7 @@ public class SchematicHandler {
         // Paste the schematic
         try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory()
                 .getEditSession(BukkitAdapter.adapt(Objects.requireNonNull(loc.getWorld())), -1)) {
+
              /*
                 Handle the masks of the structure.
              */
@@ -143,7 +145,7 @@ public class SchematicHandler {
             }
             editSession.setMask(targetMask);
 
-            Operation operation = ch.createPaste(editSession)
+            Operation operation = ch.createPaste(editSession).ignoreStructureVoidBlocks(true)
                     .to(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ())).maskSource(sourceMask).ignoreAirBlocks(!useAir).build();
 
             Operations.complete(operation);
