@@ -145,8 +145,14 @@ public class SchematicHandler {
             }
             editSession.setMask(targetMask);
 
-            Operation operation = ch.createPaste(editSession).ignoreStructureVoidBlocks(true)
-                    .to(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ())).maskSource(sourceMask).ignoreAirBlocks(!useAir).build();
+            Operation operation;
+            if (Bukkit.getPluginManager().isPluginEnabled("fastasyncworldedit")) {
+                operation = ch.createPaste(editSession)
+                        .to(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ())).maskSource(sourceMask).ignoreAirBlocks(!useAir).build();
+            } else {
+                operation = ch.createPaste(editSession).ignoreStructureVoidBlocks(true)
+                        .to(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ())).maskSource(sourceMask).ignoreAirBlocks(!useAir).build();
+            }
 
             Operations.complete(operation);
 
